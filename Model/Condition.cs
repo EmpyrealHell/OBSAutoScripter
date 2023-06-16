@@ -1,4 +1,5 @@
-﻿using OBSWebsocketDotNet;
+﻿using Newtonsoft.Json;
+using OBSWebsocketDotNet;
 
 namespace OBSAutoScripter.Model
 {
@@ -28,15 +29,16 @@ namespace OBSAutoScripter.Model
             { ConditionFunction.SourceDisabled, (o, t) => !o.GetSceneItemEnabled(t.Key.SceneName, t.Key.ItemId) }
         };
 
-        public ConditionFunction Variable { get; set; } = ConditionFunction.Always;
+        public ConditionFunction Function { get; set; } = ConditionFunction.Always;
         public string Value { get; set; } = string.Empty;
+        [JsonIgnore]
         public Key Key { get; set; } = new Key();
         public string Sequence { get; set; } = string.Empty;
         public IEnumerable<Condition> SubConditions { get; set; } = Enumerable.Empty<Condition>();
 
         public bool Evaluate(OBSWebsocket socket)
         {
-            if (_evaluators.TryGetValue(Variable, out var funcValue))
+            if (_evaluators.TryGetValue(Function, out var funcValue))
             {
                 return funcValue(socket, this);
             }

@@ -15,7 +15,7 @@ namespace OBSAutoScripter
                 File.WriteAllText(credentialsFile, JsonConvert.SerializeObject(new Credentials()));
                 Error($"Credentials file ({credentialsFile}) not found. A default version of this file has been created for you. Please update this file with your OBS data.");
             }
-            var credentials = JsonConvert.DeserializeObject<Credentials>(credentialsFile);
+            var credentials = JsonConvert.DeserializeObject<Credentials>(File.ReadAllText(credentialsFile));
             if (string.IsNullOrWhiteSpace(credentials?.Url) || string.IsNullOrWhiteSpace(credentials?.Password))
             {
                 File.WriteAllText(credentialsFile, JsonConvert.SerializeObject(new Credentials()));
@@ -53,7 +53,17 @@ namespace OBSAutoScripter
                 Error($"Script file {file} not found.");
             }
             Console.WriteLine($"Loading {file}");
-            return Script.Load(file, socket);
+            try
+            {
+                var script = Script.Load(file, socket);
+                return script;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing {file}");
+                Error(ex.ToString());
+            }
+            return new Script();
         }
 
         private static void Error(string message)

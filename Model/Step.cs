@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OBSWebsocketDotNet;
 
 namespace OBSAutoScripter.Model
@@ -89,7 +90,13 @@ namespace OBSAutoScripter.Model
         };
 
         public StepAction Action { get; set; } = StepAction.None;
+        [JsonProperty("Source")]
+        public string SourceName { get; set; } = string.Empty;
+        [JsonIgnore]
         public Key Source { get; set; } = new Key();
+        [JsonProperty("Target")]
+        public string TargetName { get; set; } = string.Empty;
+        [JsonIgnore]
         public Key Target { get; set; } = new Key();
         public int Duration { get; set; } = -1;
         public int X { get; set; } = -1;

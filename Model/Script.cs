@@ -23,13 +23,26 @@ namespace OBSAutoScripter.Model
                 throw new JsonSerializationException($"Failed to parse {path}");
             }
             var keys = new Dictionary<string, Key>();
+            var scenes = socket.GetSceneList();
             foreach (var scene in script.Scenes)
             {
+                if (!scenes.Scenes.Any(x => x.Name == scene.Name))
+                {
+                    throw new Exception($"No scene in list matches name {scene.Name}.");
+                }
                 keys.Add(scene.Key, new Key() { Name = scene.Key, SceneName = scene.Name });
                 foreach (var source in scene.Sources)
                 {
-                    var id = socket.GetSceneItemId(scene.Name, source.Name, 0);
-                    keys.Add(scene.Key, new Key() { Name = source.Key, SceneName = scene.Name, ItemId = id });
+                    var id = -1;
+                    try
+                    {
+                        id = socket.GetSceneItemId(scene.Name, source.Name, 0);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"Failed to fetch scene item id for source {source.Name} in scene {scene.Name}", ex);
+                    }
+                    keys.Add(source.Key, new Key() { Name = source.Key, SceneName = scene.Name, ItemId = id });
                 }
             }
             script.Keys = keys;
@@ -39,6 +52,21 @@ namespace OBSAutoScripter.Model
                 if (script.Keys.TryGetValue(condition.Value, out var value))
                 {
                     condition.Key = value;
+                }
+            }
+
+            foreach (var sequence in script.Sequences)
+            {
+                foreach (var step in sequence.Steps)
+                {
+                    if (script.Keys.TryGetValue(step.TargetName, out var targetValue))
+                    {
+                        step.Target = targetValue;
+                    }
+                    if (script.Keys.TryGetValue(step.SourceName, out var sourceValue))
+                    {
+                        step.Source = sourceValue;
+                    }
                 }
             }
             return script;
