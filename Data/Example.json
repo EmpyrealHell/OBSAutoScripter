@@ -1,0 +1,114 @@
+{
+  "Scenes": [
+    {
+      "Key": "$CameraScene",
+      "Name": "Camera Scene",
+      "Sources": [
+        {
+          "Key": "$WebCam",
+          "Name": "Camera"
+        },
+        {
+          "Key": "$RevealMoon",
+          "Name": "MoonReveal"
+        }
+      ]
+    },
+    {
+      "Key": "$WolfScene",
+      "Name": "VTuber Scene",
+      "Sources": [
+        {
+          "Key": "$WolfCam",
+          "Name": "VTuber Studios"
+        },
+        {
+          "Key": "$HideMoon",
+          "Name": "MoonRevealReverse"
+        },
+        {
+          "Key": "$StaticMoon",
+          "Name": "MoonStatic"
+        }
+      ]
+    }
+  ],
+  "Sequences": [
+    {
+      "Name": "ToWolf",
+      "Steps": [
+        {
+          "Action": "EnableSource",
+          "Target": "$RevealMoon"
+        },
+        {
+          "Action": "Wait",
+          "Duration": 8000
+        },
+        {
+          "Action": "CopyPosition",
+          "Source": "$WebCam",
+          "Target": "$WolfCam",
+          "OffsetX": 100,
+          "OffsetY": 100
+        },
+        {
+          "Action": "ChangeScene",
+          "Target": "$WolfScene"
+        },
+        {
+          "Action": "DisableSource",
+          "Target": "$HideMoon"
+        },
+        {
+          "Action": "EnableSource",
+          "Target": "$StaticMoon"
+        }
+      ]
+    },
+    {
+      "Name": "ToCamera",
+      "Steps": [
+        {
+          "Action": "DisableSource",
+          "Target": "$StaticMoon"
+        },
+        {
+          "Action": "EnableSource",
+          "Target": "$HideMoon"
+        },
+        {
+          "Action": "Wait",
+          "Duration": 8000
+        },
+        {
+          "Action": "CopyPosition",
+          "Source": "$WolfCam",
+          "Target": "$WebCam",
+          "OffsetX": -100,
+          "OffsetY": -100
+        },
+        {
+          "Action": "ChangeScene",
+          "Target": "$CameraScene"
+        },
+        {
+          "Action": "DisableSource",
+          "Target": "$RevealMoon"
+        }
+      ]
+    }
+  ],
+  "Conditions": [
+    {
+      "Function": "CurrentScene",
+      "Value": "$CameraScene",
+      "Sequence": "ToWolf"
+    },
+    {
+      "Function": "CurrentScene",
+      "Value": "$WolfScene",
+      "Sequence": "ToCamera"
+    }
+  ]
+}
